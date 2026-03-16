@@ -1,4 +1,3 @@
-
 import java.util.HashMap;
 import java.util.Map;
 class RoomInventory {
@@ -27,7 +26,7 @@ class RoomInventory {
         }
     }
 }
-public class UseCase3InventorySetup {
+public class BOOKMYSTAYAPP {
     public static void main(String[] args) {
         RoomInventory inventory = new RoomInventory();
         inventory.addRoomType("Single", 10);
