@@ -1,40 +1,103 @@
-import java.util.HashMap;
-import java.util.Map;
-class RoomInventory {
-    private Map<String, Integer> inventory;
+import java.util.*;
 
-    public RoomInventory() {
-        inventory = new HashMap<>();
+// Room class representing room details
+class Room {
+    private String roomType;
+    private double price;
+    private String amenities;
+
+    public Room(String roomType, double price, String amenities) {
+        this.roomType = roomType;
+        this.price = price;
+        this.amenities = amenities;
     }
-    public void addRoomType(String roomType, int count) {
-        inventory.put(roomType, count);
+
+    public String getRoomType() {
+        return roomType;
     }
-    public int getAvailability(String roomType) {
-        return inventory.getOrDefault(roomType, 0);
+
+    public double getPrice() {
+        return price;
     }
-    public void updateAvailability(String roomType, int newCount) {
-        if (inventory.containsKey(roomType)) {
-            inventory.put(roomType, newCount);
-        } else {
-            System.out.println("Room type not found in inventory.");
+
+    public String getAmenities() {
+        return amenities;
+    }
+
+    public void displayDetails() {
+        System.out.println("Room Type: " + roomType);
+        System.out.println("Price: $" + price);
+        System.out.println("Amenities: " + amenities);
+        System.out.println("---------------------------");
+    }
+}
+
+// Inventory class holding the room availability
+class Inventory {
+    private Map<Room, Integer> roomAvailability;
+
+    public Inventory() {
+        roomAvailability = new HashMap<>();
+    }
+
+    // Add a room type with initial availability
+    public void addRoom(Room room, int count) {
+        roomAvailability.put(room, count);
+    }
+
+    // Get a read-only copy of availability
+    public Map<Room, Integer> getAvailability() {
+        return Collections.unmodifiableMap(roomAvailability);
+    }
+}
+
+// SearchService for read-only room search
+class SearchService {
+    private Inventory inventory;
+
+    public SearchService(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    public void searchAvailableRooms() {
+        Map<Room, Integer> availability = inventory.getAvailability();
+
+        boolean roomsFound = false;
+        System.out.println("Available Rooms:");
+        System.out.println("================");
+
+        for (Map.Entry<Room, Integer> entry : availability.entrySet()) {
+            Room room = entry.getKey();
+            int count = entry.getValue();
+
+            if (count > 0) { // Only show rooms with availability
+                room.displayDetails();
+                roomsFound = true;
+            }
         }
-    }
-    public void displayInventory() {
-        System.out.println("Current Room Inventory:");
-        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
-            System.out.println("Room Type: " + entry.getKey() + " | Available: " + entry.getValue());
+
+        if (!roomsFound) {
+            System.out.println("No rooms available at the moment.");
         }
     }
 }
+
+// Main class to run Use Case 4
 public class BOOKMYSTAYAPP {
     public static void main(String[] args) {
-        RoomInventory inventory = new RoomInventory();
-        inventory.addRoomType("Single", 10);
-        inventory.addRoomType("Double", 5);
-        inventory.addRoomType("Suite", 2);
-        inventory.displayInventory();
-        System.out.println("Availability of Double rooms: " + inventory.getAvailability("Double"));
-        inventory.updateAvailability("Double", 3);
-        inventory.displayInventory();
+        // Create rooms
+        Room deluxeRoom = new Room("Deluxe", 1200.0, "WiFi, TV, AC");
+        Room suiteRoom = new Room("Suite", 2500.0, "WiFi, TV, AC, Mini Bar");
+        Room standardRoom = new Room("Standard", 800.0, "WiFi, TV");
+
+        // Setup inventory
+        Inventory inventory = new Inventory();
+        inventory.addRoom(deluxeRoom, 5);
+        inventory.addRoom(suiteRoom, 0); // unavailable
+        inventory.addRoom(standardRoom, 10);
+
+        // Search available rooms
+        SearchService searchService = new SearchService(inventory);
+        searchService.searchAvailableRooms();
     }
 }
